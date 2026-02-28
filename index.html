@@ -20,7 +20,6 @@ body{
     margin-bottom:15px;
 }
 
-/* TAB MENU */
 .tabs{
     display:flex;
     gap:10px;
@@ -43,7 +42,6 @@ body{
     font-weight:bold;
 }
 
-/* CARD */
 .card{
     background:#161b22;
     padding:20px;
@@ -114,50 +112,52 @@ textarea{
     <div class="tab" onclick="showTab('other',this)">OTHER</div>
 </div>
 
-<!-- DONATE -->
-<div id="donate" class="section">
-    <div class="card">
-        <h3>Support Developer ❤️</h3>
-        <p>Nếu bạn thích công cụ này hãy ủng hộ nhé.</p>
-        <p>Bank: 0000000000</p>
-        <p>Momo: 0900000000</p>
-    </div>
-</div>
-
-<!-- RAYFIELD (MAIN) -->
+<!-- RAYFIELD -->
 <div id="rayfield" class="section active">
-    <div class="card">
-        <h3>NAME MENU</h3>
-        <input type="text" id="nameMenu">
 
-        <h3>ICON MENU</h3>
-        <input type="text" id="iconMenu">
+<div class="card">
 
-        <h3>TITLE MENU</h3>
-        <input type="text" id="titleMenu">
+<h3>NAME MENU</h3>
+<input type="text" id="nameMenu">
 
-        <h3>SUB TITLE MENU</h3>
-        <input type="text" id="subTitleMenu">
+<h3>THEME MENU</h3>
+<input list="themes" id="themeMenu" placeholder="Chọn hoặc nhập theme">
 
-        <button class="generate" onclick="createScript()">Generate Script</button>
-    </div>
+<datalist id="themes">
+<option value="Default (Mặc định)">
+<option value="AmberGlow (Ánh sáng hổ phách)">
+<option value="Amethyst (Thạch anh tím)">
+<option value="Bloom (Hoa)">
+<option value="DarkBlue (Xanh đậm)">
+<option value="Green (Màu xanh lá)">
+<option value="Light (Ánh sáng)">
+<option value="Ocean (Đại dương)">
+<option value="Serenity (Sự thanh bình)">
+</datalist>
 
-    <div class="card" style="margin-top:20px;">
-        <h3>Generated Output</h3>
-        <textarea id="output"></textarea>
-        <button class="copy" onclick="copyScript()">Copy to Clipboard</button>
-    </div>
+<h3>ICON MENU</h3>
+<input type="text" id="iconMenu">
+
+<h3>TITLE MENU</h3>
+<input type="text" id="titleMenu">
+
+<h3>SUB TITLE MENU</h3>
+<input type="text" id="subTitleMenu">
+
+<button class="generate" onclick="createScript()">Generate Script</button>
+
 </div>
 
-<!-- OTHER -->
-<div id="other" class="section">
-    <div class="card">
-        <h3>Other Generators Coming Soon...</h3>
-        <p>Sẽ cập nhật thêm loại script khác 🔥</p>
-    </div>
+<div class="card" style="margin-top:20px;">
+<h3>Generated Output</h3>
+<textarea id="output"></textarea>
+<button class="copy" onclick="copyScript()">Copy to Clipboard</button>
+</div>
+
 </div>
 
 <script>
+
 function showTab(id, element){
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
@@ -168,6 +168,7 @@ function showTab(id, element){
 
 function createScript(){
     var name=document.getElementById("nameMenu").value;
+    var theme=document.getElementById("themeMenu").value;
     var icon=document.getElementById("iconMenu").value;
     var title=document.getElementById("titleMenu").value;
     var subtitle=document.getElementById("subTitleMenu").value;
@@ -179,7 +180,11 @@ local Window = Rayfield:CreateWindow({
     LoadingTitle = "${title}",
     LoadingSubtitle = "${subtitle}",
     ConfigurationSaving = { Enabled = false }
-})`;
+})
+
+-- Theme Selected:
+-- ${theme}
+`;
 
     document.getElementById("output").value=script;
 }
@@ -190,6 +195,7 @@ function copyScript(){
     document.execCommand("copy");
     alert("Copied!");
 }
+
 </script>
 
 </body>
