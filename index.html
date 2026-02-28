@@ -83,7 +83,7 @@ button{
 
 textarea{
     width:100%;
-    height:200px;
+    height:220px;
     margin-top:10px;
     border-radius:12px;
     background:#0d1117;
@@ -112,6 +112,15 @@ textarea{
     <div class="tab" onclick="showTab('other',this)">OTHER</div>
 </div>
 
+<!-- DONATE -->
+<div id="donate" class="section">
+    <div class="card">
+        <h3>Support Developer ❤️</h3>
+        <p>Momo: 0900000000</p>
+        <p>Bank: 0000000000</p>
+    </div>
+</div>
+
 <!-- RAYFIELD -->
 <div id="rayfield" class="section active">
 
@@ -121,18 +130,18 @@ textarea{
 <input type="text" id="nameMenu">
 
 <h3>THEME MENU</h3>
-<input list="themes" id="themeMenu" placeholder="Chọn hoặc nhập theme">
+<input list="themes" id="themeMenu" placeholder="Chọn theme">
 
 <datalist id="themes">
-<option value="Default (Mặc định)">
-<option value="AmberGlow (Ánh sáng hổ phách)">
-<option value="Amethyst (Thạch anh tím)">
-<option value="Bloom (Hoa)">
-<option value="DarkBlue (Xanh đậm)">
-<option value="Green (Màu xanh lá)">
-<option value="Light (Ánh sáng)">
-<option value="Ocean (Đại dương)">
-<option value="Serenity (Sự thanh bình)">
+<option value="Default">
+<option value="AmberGlow">
+<option value="Amethyst">
+<option value="Bloom">
+<option value="DarkBlue">
+<option value="Green">
+<option value="Light">
+<option value="Ocean">
+<option value="Serenity">
 </datalist>
 
 <h3>ICON MENU</h3>
@@ -156,6 +165,13 @@ textarea{
 
 </div>
 
+<!-- OTHER -->
+<div id="other" class="section">
+    <div class="card">
+        <h3>Other Generators Coming Soon...</h3>
+    </div>
+</div>
+
 <script>
 
 function showTab(id, element){
@@ -176,15 +192,12 @@ function createScript(){
     var script=`local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Window = Rayfield:CreateWindow({
     Name = "${name}",
+    Theme = "${theme}",
     Icon = "${icon}",
     LoadingTitle = "${title}",
     LoadingSubtitle = "${subtitle}",
     ConfigurationSaving = { Enabled = false }
-})
-
--- Theme Selected:
--- ${theme}
-`;
+})`;
 
     document.getElementById("output").value=script;
 }
