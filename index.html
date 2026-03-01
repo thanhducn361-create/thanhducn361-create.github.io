@@ -2,62 +2,52 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScriptGen AI</title>
+<title>DECODED BY OPEN AI</title>
 
 <style>
 body{
-    background:#0d1117;
-    font-family:Segoe UI;
-    color:#e6edf3;
     margin:0;
+    background:#0b0f17;
+    font-family:Segoe UI;
+    color:white;
     padding:20px;
 }
 
 .logo{
-    font-size:24px;
+    font-size:26px;
     font-weight:bold;
-    color:#00ff9d;
-    margin-bottom:15px;
-}
-
-.tabs{
-    display:flex;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-.tab{
-    flex:1;
-    padding:10px;
     text-align:center;
-    border-radius:12px;
-    background:#161b22;
-    cursor:pointer;
-    border:1px solid #30363d;
+    margin-bottom:25px;
+    color:#1e90ff;
 }
 
-.tab.active{
-    background:#00c97b;
-    color:black;
-    font-weight:bold;
+.container{
+    max-width:600px;
+    margin:auto;
 }
 
 .card{
-    background:#161b22;
-    padding:20px;
+    background:#111827;
+    padding:25px;
     border-radius:15px;
-    box-shadow:0 0 15px rgba(0,255,150,0.1);
+    box-shadow:0 0 25px rgba(30,144,255,0.2);
+    border:1px solid #1e90ff33;
+}
+
+h3{
+    margin-top:0;
+    color:#1e90ff;
 }
 
 input{
     width:100%;
-    padding:12px;
-    margin-top:8px;
-    margin-bottom:15px;
-    border-radius:10px;
-    border:1px solid #30363d;
-    background:#0d1117;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #1e90ff55;
+    background:#0b0f17;
     color:white;
+    font-size:15px;
+    margin-bottom:15px;
 }
 
 button{
@@ -67,287 +57,93 @@ button{
     border:none;
     font-weight:bold;
     cursor:pointer;
+    font-size:15px;
+    transition:0.3s;
 }
 
-.generate{
-    background:#00c97b;
-    color:black;
+.decode{
+    background:#1e90ff;
+    color:white;
+}
+
+.decode:hover{
+    background:#0f6cd6;
 }
 
 .copy{
     margin-top:10px;
-    background:#21262d;
-    color:#00ff9d;
-    border:1px solid #00ff9d;
+    background:black;
+    color:#1e90ff;
+    border:1px solid #1e90ff;
+}
+
+.copy:hover{
+    background:#1e90ff;
+    color:black;
 }
 
 textarea{
     width:100%;
-    height:230px;
-    margin-top:10px;
+    height:200px;
+    margin-top:15px;
     border-radius:12px;
-    background:#0d1117;
-    color:#00ff9d;
+    background:#0b0f17;
+    color:#00bfff;
     padding:15px;
-    border:1px solid #30363d;
-}
-
-.section{
-    display:none;
-}
-
-.section.active{
-    display:block;
+    border:1px solid #1e90ff55;
+    font-family:Consolas;
 }
 </style>
 </head>
 
 <body>
 
-<div class="logo">ScriptGen AI</div>
+<div class="logo">DECODED BY OPEN AI</div>
 
-<div class="tabs">
-    <div class="tab" onclick="showTab('donate',this)">DONATE</div>
-    <div class="tab active" onclick="showTab('rayfield',this)">RAYFIELD</div>
-    <div class="tab" onclick="showTab('fluent',this)">FLUENT</div>
-    <div class="tab" onclick="showTab('other',this)">OTHER</div>
-</div>
-
-<!-- RAYFIELD -->
-<div id="rayfield" class="section active">
+<div class="container">
 
 <div class="card">
+<h3>ENTER KEY</h3>
+<input type="text" id="keyInput" placeholder="Enter encoded key here...">
 
-<h3>NAME MENU</h3>
-<input type="text" id="nameMenu">
+<button class="decode" onclick="decodeKey()">DECODE THE KEY</button>
 
-<h3>THEME MENU</h3>
-<input list="themes" id="themeMenu" placeholder="Chọn theme">
-<datalist id="themes">
-<option value="Default">
-<option value="AmberGlow">
-<option value="Amethyst">
-<option value="Bloom">
-<option value="DarkBlue">
-<option value="Green">
-<option value="Light">
-<option value="Ocean">
-<option value="Serenity">
-</datalist>
+<textarea id="output" placeholder="Decoded result will appear here..."></textarea>
 
-<h3>ICON MENU</h3>
-<input list="icons" id="iconMenu" placeholder="Chọn icon">
-
-<datalist id="icons">
-<option value="shield">
-<option value="shield-check">
-<option value="shield-alert">
-<option value="shield-off">
-<option value="lock">
-<option value="unlock">
-<option value="key">
-<option value="user">
-<option value="users">
-<option value="user-check">
-<option value="user-x">
-<option value="ban">
-<option value="eye">
-<option value="eye-off">
-<option value="fingerprint">
-<option value="scan">
-<option value="sword">
-<option value="crosshair">
-<option value="target">
-<option value="skull">
-<option value="flame">
-<option value="bomb">
-<option value="zap">
-<option value="gun">
-<option value="ghost">
-<option value="bug">
-<option value="alert-triangle">
-<option value="siren">
-<option value="radio">
-<option value="radar">
-<option value="settings">
-<option value="sliders">
-<option value="wrench">
-<option value="tool">
-<option value="cog">
-<option value="cpu">
-<option value="database">
-<option value="server">
-<option value="monitor">
-<option value="hard-drive">
-<option value="wifi">
-<option value="bluetooth">
-<option value="power">
-<option value="power-off">
-<option value="menu">
-<option value="more-horizontal">
-<option value="more-vertical">
-<option value="plus">
-<option value="minus">
-<option value="x">
-<option value="check">
-<option value="home">
-<option value="layout">
-<option value="grid">
-<option value="list">
-<option value="panel-left">
-<option value="panel-right">
-<option value="sidebar">
-<option value="crown">
-<option value="gem">
-<option value="star">
-<option value="award">
-<option value="badge">
-<option value="medal">
-<option value="diamond">
-<option value="sparkles">
-<option value="trophy">
-<option value="moon">
-<option value="sun">
-<option value="palette">
-<option value="paintbrush">
-<option value="image">
-<option value="camera">
-<option value="video">
-<option value="contrast">
-<option value="aperture">
-<option value="gamepad">
-<option value="dice-1">
-<option value="dice-2">
-<option value="dice-3">
-<option value="dice-4">
-<option value="dice-5">
-<option value="dice-6">
-<option value="rocket">
-<option value="gift">
-<option value="music">
-<option value="volume">
-<option value="volume-2">
-<option value="volume-x">
-<option value="apple">
-<option value="box">
-</datalist>
-
-<h3>TITLE MENU</h3>
-<input type="text" id="titleMenu">
-
-<h3>SUB TITLE MENU</h3>
-<input type="text" id="subTitleMenu">
-
-<button class="generate" onclick="createScript()">Generate Script</button>
-
-</div>
-
-<div class="card" style="margin-top:20px;">
-<h3>Generated Output</h3>
-<textarea id="output"></textarea>
-<button class="copy" onclick="copyScript()">Copy to Clipboard</button>
+<button class="copy" onclick="copyBoard()">COPPY BOARD</button>
 </div>
 
 </div>
 
 <script>
-function showTab(id, element){
-    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    element.classList.add("active");
-}
 
-function createScript(){
-    function createFluent(){
+function decodeKey(){
+    var input = document.getElementById("keyInput").value.trim();
+    var output = document.getElementById("output");
 
-    var title = document.getElementById("fluentTitle").value.trim();
-    var subtitle = document.getElementById("fluentSubTitle").value.trim();
-    var theme = document.getElementById("fluentTheme").value.trim();
-    var acrylic = document.getElementById("fluentAcrylic").value;
-
-    // Mặc định nếu bỏ trống
-    if(title === "") title = "Fluent UI";
-    if(subtitle === "") subtitle = "Generated by ScriptGen AI";
-    if(theme === "") theme = "Dark";
-
-    // Auto viết hoa chữ đầu
-    theme = theme.charAt(0).toUpperCase() + theme.slice(1).toLowerCase();
-
-    // Nếu nhập sai thì ép về Dark
-    if(theme !== "Dark" && theme !== "Light"){
-        theme = "Dark";
+    if(input === ""){
+        alert("Please enter a key!");
+        return;
     }
 
-    var script = `local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-
-local Window = Fluent:CreateWindow({
-    Title = "${title} " .. Fluent.Version,
-    SubTitle = "${subtitle}",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Acrylic = ${acrylic},
-    Theme = "${theme}",
-    MinimizeKey = Enum.KeyCode.LeftControl
-})`;
-
-    document.getElementById("output").value = script;
-}
-    var name=document.getElementById("nameMenu").value.trim();
-    var theme=document.getElementById("themeMenu").value.trim();
-    var icon=document.getElementById("iconMenu").value.trim();
-    var title=document.getElementById("titleMenu").value.trim();
-    var subtitle=document.getElementById("subTitleMenu").value.trim();
-
-    var script=`local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-local Window = Rayfield:CreateWindow({
-    Name = "${name}",
-    Theme = "${theme}",
-    Icon = "${icon}",
-    LoadingTitle = "${title}",
-    LoadingSubtitle = "${subtitle}",
-    ConfigurationSaving = { Enabled = false }
-})`;
-
-    document.getElementById("output").value=script;
+    try{
+        // Thử giải mã Base64
+        var decoded = atob(input);
+        output.value = decoded;
+    }catch(e){
+        // Nếu không phải Base64 thì đảo chuỗi làm demo decode
+        var reversed = input.split("").reverse().join("");
+        output.value = reversed;
+    }
 }
 
-function copyScript(){
-    var text=document.getElementById("output");
+function copyBoard(){
+    var text = document.getElementById("output");
     text.select();
     document.execCommand("copy");
-    alert("Copied!");
-<!-- FLUENT -->
-<div id="fluent" class="section">
+    alert("Copied to clipboard!");
+}
 
-<div class="card">
-
-<h3>TITLE MENU</h3>
-<input type="text" id="fluentTitle" placeholder="Ví dụ: chupoy">
-
-<h3>SUB TITLE MENU</h3>
-<input type="text" id="fluentSubTitle" placeholder="Ví dụ: by cute">
-
-<h3>THEME MENU</h3>
-<input list="fluentThemes" id="fluentTheme" placeholder="Light hoặc Dark">
-
-<datalist id="fluentThemes">
-<option value="Light">
-<option value="Dark">
-</datalist>
-
-<h3>ACRYLIC</h3>
-<select id="fluentAcrylic">
-<option value="true">True</option>
-<option value="false">False</option>
-</select>
-
-<button class="generate" onclick="createFluent()">Generate Fluent Script</button>
-
-</div>
-</div>
 </script>
 
 </body>
