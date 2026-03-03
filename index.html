@@ -1,150 +1,999 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DECODED BY OPEN AI</title>
-
+<title>CLOBAR — Universal Decoder</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
-body{
-    margin:0;
-    background:#0b0f17;
-    font-family:Segoe UI;
-    color:white;
-    padding:20px;
-}
+  :root {
+    --bg: #020409;
+    --surface: #070d1a;
+    --border: #0d2240;
+    --accent: #00f0ff;
+    --accent2: #ff003c;
+    --accent3: #7b2fff;
+    --green: #00ff88;
+    --text: #c8e0f0;
+    --dim: #3a5570;
+    --glow: 0 0 20px rgba(0,240,255,0.4);
+    --glow2: 0 0 40px rgba(0,240,255,0.15);
+  }
 
-.logo{
-    font-size:26px;
-    font-weight:bold;
-    text-align:center;
-    margin-bottom:25px;
-    color:#1e90ff;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.container{
-    max-width:600px;
-    margin:auto;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
 
-.card{
-    background:#111827;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 0 25px rgba(30,144,255,0.2);
-    border:1px solid #1e90ff33;
-}
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-h3{
-    margin-top:0;
-    color:#1e90ff;
-}
+  /* ── SCAN LINE ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scanline 6s linear infinite;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
 
-input{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #1e90ff55;
-    background:#0b0f17;
-    color:white;
-    font-size:15px;
-    margin-bottom:15px;
-}
+  @keyframes scanline {
+    0% { top: -2px; }
+    100% { top: 100vh; }
+  }
 
-button{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:none;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:15px;
-    transition:0.3s;
-}
+  /* ── WRAPPER ── */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
 
-.decode{
-    background:#1e90ff;
-    color:white;
-}
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    position: relative;
+  }
 
-.decode:hover{
-    background:#0f6cd6;
-}
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-shadow:
+      0 0 10px var(--accent),
+      0 0 40px rgba(0,240,255,0.5),
+      0 0 80px rgba(0,240,255,0.2);
+    animation: pulse-logo 3s ease-in-out infinite;
+    position: relative;
+    display: inline-block;
+  }
 
-.copy{
-    margin-top:10px;
-    background:black;
-    color:#1e90ff;
-    border:1px solid #1e90ff;
-}
+  .logo::before {
+    content: 'CLOBAR';
+    position: absolute;
+    top: 3px; left: 3px;
+    color: var(--accent2);
+    opacity: 0.25;
+    text-shadow: none;
+    filter: blur(2px);
+  }
 
-.copy:hover{
-    background:#1e90ff;
-    color:black;
-}
+  @keyframes pulse-logo {
+    0%, 100% { text-shadow: 0 0 10px var(--accent), 0 0 40px rgba(0,240,255,0.5), 0 0 80px rgba(0,240,255,0.2); }
+    50% { text-shadow: 0 0 20px var(--accent), 0 0 70px rgba(0,240,255,0.7), 0 0 120px rgba(0,240,255,0.3); }
+  }
 
-textarea{
-    width:100%;
-    height:200px;
-    margin-top:15px;
-    border-radius:12px;
-    background:#0b0f17;
-    color:#00bfff;
-    padding:15px;
-    border:1px solid #1e90ff55;
-    font-family:Consolas;
-}
+  .tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--dim);
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .header-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent3), var(--accent2), transparent);
+    margin-top: 24px;
+    opacity: 0.6;
+  }
+
+  /* ── PANEL ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent3));
+    opacity: 0.8;
+  }
+
+  .panel-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    opacity: 0.7;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  /* ── TEXTAREA ── */
+  textarea {
+    width: 100%;
+    background: #030810;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 16px;
+    resize: vertical;
+    min-height: 140px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    caret-color: var(--accent);
+  }
+
+  textarea::placeholder {
+    color: var(--dim);
+    opacity: 0.5;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,240,255,0.2), inset 0 0 20px rgba(0,240,255,0.03);
+  }
+
+  /* ── DECODE BUTTON ── */
+  .btn-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 24px 0;
+  }
+
+  .btn-decode {
+    position: relative;
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    padding: 14px 40px;
+    cursor: pointer;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: color 0.3s;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  }
+
+  .btn-decode::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: -1;
+  }
+
+  .btn-decode:hover::before {
+    transform: scaleX(1);
+  }
+
+  .btn-decode:hover {
+    color: var(--bg);
+    box-shadow: 0 0 30px rgba(0,240,255,0.5);
+  }
+
+  .btn-decode:active {
+    transform: scale(0.97);
+  }
+
+  .btn-decode:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn-clear {
+    background: transparent;
+    border: 1px solid var(--dim);
+    color: var(--dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+
+  .btn-clear:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    margin-left: auto;
+    letter-spacing: 0.1em;
+  }
+
+  .status-bar.active { color: var(--green); }
+  .status-bar.error  { color: var(--accent2); }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 16px 0 0;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-wrap.visible { display: block; }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    border-radius: 2px;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(2,4,9,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+  }
+
+  .loading-overlay.active { display: flex; }
+
+  .spinner {
+    width: 56px;
+    height: 56px;
+    position: relative;
+  }
+
+  .spinner::before,
+  .spinner::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+  }
+
+  .spinner::before {
+    inset: 0;
+    border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+  }
+
+  .spinner::after {
+    inset: 8px;
+    border-top-color: var(--accent3);
+    animation: spin 1.2s linear infinite reverse;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  .loading-steps {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  /* ── OUTPUT PANEL ── */
+  .output-panel {
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .output-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .decode-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    padding: 4px 12px;
+    border: 1px solid var(--green);
+    color: var(--green);
+    background: rgba(0,255,136,0.06);
+    text-transform: uppercase;
+  }
+
+  .copy-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    padding: 4px 14px;
+    border: 1px solid var(--dim);
+    color: var(--dim);
+    background: transparent;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .output-box {
+    background: #020b08;
+    border: 1px solid rgba(0,255,136,0.15);
+    border-radius: 3px;
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--green);
+    min-height: 100px;
+    word-break: break-all;
+    white-space: pre-wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .output-box::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    opacity: 0.4;
+  }
+
+  /* typing cursor */
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 0.7s step-end infinite;
+  }
+
+  /* ── CIPHER INFO ── */
+  .cipher-info {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .cipher-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border: 1px solid var(--accent3);
+    color: var(--accent3);
+    background: rgba(123,47,255,0.06);
+    letter-spacing: 0.15em;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .cipher-tag.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ── CORNER DECORATIONS ── */
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+  }
+  .corner.tl { top: 6px; left: 6px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .corner.tr { top: 6px; right: 6px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .corner.bl { bottom: 6px; left: 6px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .corner.br { bottom: 6px; right: 6px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--dim);
+    opacity: 0.5;
+  }
+
+  /* ── GLITCH on result ── */
+  @keyframes glitch {
+    0%   { clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%); transform: translate(-3px, 0); }
+    20%  { clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%); transform: translate(3px, 0); }
+    40%  { clip-path: polygon(0 45%, 100% 45%, 100% 55%, 0 55%); transform: translate(-2px, 0); }
+    60%  { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translate(2px, 0); }
+    80%  { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translate(-1px, 0); }
+    100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0); }
+  }
+
+  .glitch-in { animation: glitch 0.4s steps(1) forwards; }
+
+  @media (max-width: 600px) {
+    .btn-row { flex-wrap: wrap; }
+    .status-bar { font-size: 10px; }
+  }
 </style>
 </head>
-
 <body>
 
-<div class="logo">DECODED BY OPEN AI</div>
+<div class="wrapper">
 
-<div class="container">
+  <header>
+    <div class="logo">CLOBAR</div>
+    <div class="tagline">Universal Cipher Decoder System v3.1</div>
+    <div class="header-line"></div>
+  </header>
 
-<div class="card">
-<h3>ENTER KEY</h3>
-<input type="text" id="keyInput" placeholder="Enter encoded key here...">
+  <!-- INPUT PANEL -->
+  <div class="panel" id="inputPanel">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
 
-<button class="decode" onclick="decodeKey()">DECODE THE KEY</button>
+    <div class="panel-label">▸ Input — Encoded Payload</div>
+    <textarea id="inputText" placeholder="Paste your encoded string here...
+Supports: Base64, Hex, Binary, ROT13, Caesar, Morse, URL, HTML entities, JWT, MD5-like hashes, XOR patterns, Atbash, Vigenere-like, Bacon, Rail Fence, and more..."></textarea>
 
-<textarea id="output" placeholder="Decoded result will appear here..."></textarea>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
 
-<button class="copy" onclick="copyBoard()">COPPY BOARD</button>
+    <div class="btn-row">
+      <button class="btn-decode" id="decodeBtn" onclick="startDecode()">⬡ DECODE</button>
+      <button class="btn-clear" onclick="clearAll()">CLEAR</button>
+      <span class="status-bar" id="statusBar">STANDBY</span>
+    </div>
+
+    <!-- LOADING overlay on input panel -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">ANALYSING...</div>
+      <div class="loading-steps" id="loadingSteps"></div>
+    </div>
+  </div>
+
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel" id="outputPanel">
+    <div class="panel">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="panel-label">▸ Output — Decoded Result</div>
+
+      <div class="output-header">
+        <div class="decode-badge" id="decodeBadge">✓ DECODED</div>
+        <button class="copy-btn" onclick="copyResult()">COPY</button>
+      </div>
+
+      <div class="output-box" id="outputBox"></div>
+
+      <div class="cipher-info" id="cipherInfo"></div>
+    </div>
+  </div>
+
 </div>
 
-</div>
+<footer>CLOBAR SYSTEM — DECODE ANYTHING — ALL RIGHTS RESERVED</footer>
 
 <script>
+// ──────────────────────────────────────────────
+//  DECODER ENGINE
+// ──────────────────────────────────────────────
 
-function decodeKey(){
-    var input = document.getElementById("keyInput").value.trim();
-    var output = document.getElementById("output");
+const DECODERS = [
 
-    if(input === ""){
-        alert("Please enter a key!");
-        return;
+  {
+    name: 'Base64',
+    check: s => /^[A-Za-z0-9+/]+=*$/.test(s.replace(/\s/g,'')) && s.length % 4 <= 2,
+    decode: s => {
+      try { return atob(s.replace(/\s/g,'')); } catch(e) { return null; }
     }
+  },
 
-    try{
-        // Thử giải mã Base64
-        var decoded = atob(input);
-        output.value = decoded;
-    }catch(e){
-        // Nếu không phải Base64 thì đảo chuỗi làm demo decode
-        var reversed = input.split("").reverse().join("");
-        output.value = reversed;
+  {
+    name: 'Base64 URL',
+    check: s => /^[A-Za-z0-9\-_]+=*$/.test(s.replace(/\s/g,'')),
+    decode: s => {
+      try {
+        const b = s.replace(/\s/g,'').replace(/-/g,'+').replace(/_/g,'/');
+        return atob(b.padEnd(b.length + (4 - b.length % 4) % 4, '='));
+      } catch(e) { return null; }
     }
+  },
+
+  {
+    name: 'Hex',
+    check: s => /^([0-9a-fA-F]{2}\s*)+$/.test(s.trim()),
+    decode: s => {
+      try {
+        return s.trim().replace(/\s+/g,'').match(/.{2}/g)
+          .map(b => String.fromCharCode(parseInt(b,16))).join('');
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'Binary',
+    check: s => /^[01\s]+$/.test(s.trim()) && s.trim().replace(/\s+/g,'').length % 8 === 0,
+    decode: s => {
+      try {
+        return s.trim().replace(/\s+/g,'').match(/.{8}/g)
+          .map(b => String.fromCharCode(parseInt(b,2))).join('');
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'URL Encoding',
+    check: s => /%[0-9A-Fa-f]{2}/.test(s),
+    decode: s => { try { return decodeURIComponent(s); } catch(e) { return null; } }
+  },
+
+  {
+    name: 'HTML Entities',
+    check: s => /&(#?\w+);/.test(s),
+    decode: s => {
+      const el = document.createElement('textarea');
+      el.innerHTML = s;
+      return el.value;
+    }
+  },
+
+  {
+    name: 'ROT13',
+    check: s => /[A-Za-z]/.test(s),
+    decode: s => s.replace(/[A-Za-z]/g, c => {
+      const b = c <= 'Z' ? 65 : 97;
+      return String.fromCharCode(((c.charCodeAt(0) - b + 13) % 26) + b);
+    })
+  },
+
+  {
+    name: 'ROT47',
+    check: s => /[\x21-\x7E]/.test(s),
+    decode: s => s.replace(/[\x21-\x7E]/g, c =>
+      String.fromCharCode(((c.charCodeAt(0) - 33 + 47) % 94) + 33))
+  },
+
+  {
+    name: 'Caesar Cipher',
+    check: s => /[A-Za-z]/.test(s),
+    decode: s => {
+      // Try all 25 shifts, pick the one with most English words
+      let best = s, bestScore = 0;
+      for (let shift = 1; shift < 26; shift++) {
+        const candidate = s.replace(/[A-Za-z]/g, c => {
+          const b = c <= 'Z' ? 65 : 97;
+          return String.fromCharCode(((c.charCodeAt(0) - b + shift) % 26) + b);
+        });
+        const score = scoreEnglish(candidate);
+        if (score > bestScore) { bestScore = score; best = candidate; }
+      }
+      return bestScore > 0 ? best : null;
+    }
+  },
+
+  {
+    name: 'Atbash',
+    check: s => /[A-Za-z]/.test(s),
+    decode: s => s.replace(/[A-Za-z]/g, c => {
+      const b = c <= 'Z' ? 65 : 97;
+      return String.fromCharCode(b + (25 - (c.charCodeAt(0) - b)));
+    })
+  },
+
+  {
+    name: 'Morse Code',
+    check: s => /^[.\-\/\s]+$/.test(s.trim()),
+    decode: s => {
+      const MAP = {
+        '.-':'A','-.-.':'C','-..':'D','.':'E','..-.':'F','--.':'G','....':'H','..':'I',
+        '.---':'J','-.-':'K','.-..':'L','--':'M','-.':'N','---':'O','.--.':'P','--.-':'Q',
+        '.-.':'R','...':'S','-':'T','..-':'U','...-':'V','.--':'W','-..-':'X','-.--':'Y',
+        '--..':'Z','-----':'0','.----':'1','..---':'2','...--':'3','....--':'4','.....-':'5',
+        '-....':'6','--...':'7','---..':'8','----.':'9','.-.-.-':'.','--..--':',',
+        '..--..':'?','-..-.':'/','-.--.-':')','-.--.':'(',
+        '.-...':'&','---...':':','-.-.-.':';','-...-':'=','.-.-.':'+','-....-':'-',
+        '..--.-':'_','.-..-.':'"','...-..-':'$','.--.-.':'@','...---...':'SOS'
+      };
+      try {
+        return s.trim().split('   ').map(word =>
+          word.split(' ').map(c => MAP[c] || '?').join('')
+        ).join(' ');
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'Octal',
+    check: s => /^([0-7]{3}\s*)+$/.test(s.trim()),
+    decode: s => {
+      try {
+        return s.trim().replace(/\s+/g,'').match(/.{3}/g)
+          .map(o => String.fromCharCode(parseInt(o,8))).join('');
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'Unicode Escape',
+    check: s => /\\u[0-9a-fA-F]{4}/.test(s),
+    decode: s => s.replace(/\\u([0-9a-fA-F]{4})/g, (_,h) =>
+      String.fromCharCode(parseInt(h,16)))
+  },
+
+  {
+    name: 'Hex Escape',
+    check: s => /\\x[0-9a-fA-F]{2}/.test(s),
+    decode: s => s.replace(/\\x([0-9a-fA-F]{2})/g, (_,h) =>
+      String.fromCharCode(parseInt(h,16)))
+  },
+
+  {
+    name: 'JWT Token',
+    check: s => /^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$/.test(s.trim()),
+    decode: s => {
+      try {
+        const parts = s.trim().split('.');
+        const dec = p => {
+          let b = p.replace(/-/g,'+').replace(/_/g,'/');
+          b = b.padEnd(b.length + (4 - b.length % 4) % 4, '=');
+          return JSON.parse(atob(b));
+        };
+        return `HEADER:\n${JSON.stringify(dec(parts[0]),null,2)}\n\nPAYLOAD:\n${JSON.stringify(dec(parts[1]),null,2)}\n\nSIGNATURE: [${parts[2]}]`;
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'Reverse',
+    check: s => s.length > 2,
+    decode: s => s.split('').reverse().join('')
+  },
+
+  {
+    name: 'Bacon Cipher',
+    check: s => /^[AB\s]+$/i.test(s.trim()),
+    decode: s => {
+      const BM = {AAAAA:'A',AAAAB:'B',AAABA:'C',AAABB:'D',AABAA:'E',AABAB:'F',
+        AABBA:'G',AABBB:'H',ABAAA:'I',ABAAB:'J',ABABA:'K',ABABB:'L',ABBAA:'M',
+        ABBAB:'N',ABBBA:'O',ABBBB:'P',BAAAA:'Q',BAAAB:'R',BAABA:'S',BAABB:'T',
+        BABAA:'U',BABAB:'V',BABBA:'W',BABBB:'X',BBAAA:'Y',BBAAB:'Z'};
+      try {
+        return s.toUpperCase().replace(/\s+/g,'').match(/.{5}/g)
+          .map(g => BM[g] || '?').join('');
+      } catch(e) { return null; }
+    }
+  },
+
+  {
+    name: 'Decimal (ASCII)',
+    check: s => /^(\d{1,3}\s+)+\d{1,3}\s*$/.test(s.trim()),
+    decode: s => {
+      try {
+        const nums = s.trim().split(/\s+/).map(Number);
+        if (nums.every(n => n >= 0 && n <= 127))
+          return nums.map(n => String.fromCharCode(n)).join('');
+        return null;
+      } catch(e) { return null; }
+    }
+  },
+
+];
+
+// ── English word frequency scorer ──
+const COMMON = new Set(['the','be','to','of','and','a','in','that','have','it',
+  'for','not','on','with','he','as','you','do','at','this','but','his','by','from',
+  'they','we','say','her','she','or','an','will','my','one','all','would','there',
+  'their','what','so','up','out','if','about','who','get','which','go','me','when',
+  'make','can','like','time','no','just','him','know','take','people','into','year',
+  'your','good','some','could','them','see','other','than','then','now','look',
+  'only','come','its','over','think','also','back','after','use','two','how','our',
+  'work','first','well','way','even','new','want','because','any','these','give',
+  'day','most','us','is','are','was','were','been','has','had','did','does']);
+
+function scoreEnglish(s) {
+  const words = s.toLowerCase().match(/[a-z]+/g) || [];
+  return words.filter(w => COMMON.has(w)).length;
 }
 
-function copyBoard(){
-    var text = document.getElementById("output");
-    text.select();
-    document.execCommand("copy");
-    alert("Copied to clipboard!");
+// ── Multi-layer decode ──
+function smartDecode(input) {
+  const s = input.trim();
+  if (!s) return { result: '', ciphers: [] };
+
+  const detected = [];
+  let current = s;
+
+  // Try up to 5 layers
+  for (let layer = 0; layer < 5; layer++) {
+    let found = false;
+    for (const dec of DECODERS) {
+      if (!dec.check(current)) continue;
+      const result = dec.decode(current);
+      if (!result || result === current || result.length < 1) continue;
+
+      // Validate: result should have some printable content
+      const printable = result.replace(/[^\x20-\x7E\n\r\t]/g,'').length;
+      if (printable / result.length < 0.5) continue;
+
+      detected.push(dec.name);
+      current = result;
+      found = true;
+      break;
+    }
+    if (!found) break;
+  }
+
+  if (detected.length === 0) {
+    // If nothing detected, return as-is with a note
+    return { result: s, ciphers: ['RAW — No encoding detected, showing as-is'] };
+  }
+
+  return { result: current, ciphers: detected };
 }
 
+// ──────────────────────────────────────────────
+//  UI LOGIC
+// ──────────────────────────────────────────────
+
+const LOADING_MESSAGES = [
+  'INITIALISING CIPHER ENGINE...',
+  'SCANNING ENTROPY PATTERNS...',
+  'ANALYSING BYTE SEQUENCES...',
+  'CROSS-REFERENCING CIPHER TABLES...',
+  'APPLYING FREQUENCY ANALYSIS...',
+  'RUNNING DECODE ALGORITHMS...',
+  'VALIDATING OUTPUT INTEGRITY...',
+  'FINALISING RESULT...'
+];
+
+const LOADING_STEPS_LIST = [
+  'Base64 / URL / Hex detection',
+  'Binary / Octal analysis',
+  'Classical cipher detection',
+  'Morse / Bacon / Atbash check',
+  'JWT / Token parsing',
+  'Multi-layer unwrapping',
+  'English frequency scoring',
+  'Output validation'
+];
+
+let decoding = false;
+
+async function startDecode() {
+  if (decoding) return;
+  const input = document.getElementById('inputText').value;
+  if (!input.trim()) {
+    setStatus('NO INPUT', 'error');
+    return;
+  }
+
+  decoding = true;
+  document.getElementById('decodeBtn').disabled = true;
+  document.getElementById('outputPanel').classList.remove('visible');
+  setStatus('PROCESSING...', 'active');
+
+  // Show loading overlay
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('active');
+
+  // Animate progress + messages
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const loadingText = document.getElementById('loadingText');
+  const loadingSteps = document.getElementById('loadingSteps');
+
+  progressWrap.classList.add('visible');
+  progressBar.style.width = '0%';
+
+  let msgIdx = 0;
+  let stepIdx = 0;
+  const totalDuration = 1800 + Math.random() * 600;
+  const interval = 80;
+  let elapsed = 0;
+
+  const ticker = setInterval(() => {
+    elapsed += interval;
+    const pct = Math.min(95, (elapsed / totalDuration) * 100);
+    progressBar.style.width = pct + '%';
+
+    const newMsgIdx = Math.floor((pct / 100) * LOADING_MESSAGES.length);
+    if (newMsgIdx !== msgIdx && newMsgIdx < LOADING_MESSAGES.length) {
+      msgIdx = newMsgIdx;
+      loadingText.textContent = LOADING_MESSAGES[msgIdx];
+    }
+
+    const newStepIdx = Math.floor((pct / 100) * LOADING_STEPS_LIST.length);
+    if (newStepIdx !== stepIdx) {
+      stepIdx = newStepIdx;
+      loadingSteps.innerHTML = LOADING_STEPS_LIST
+        .slice(0, stepIdx + 1)
+        .map((s,i) => `<span style="color:${i < stepIdx ? 'var(--green)' : 'var(--accent)'}">${i < stepIdx ? '✓' : '▶'} ${s}</span>`)
+        .join('<br>');
+    }
+  }, interval);
+
+  // Actual decode (async to not block render)
+  await sleep(totalDuration);
+  clearInterval(ticker);
+
+  const { result, ciphers } = smartDecode(input);
+
+  progressBar.style.width = '100%';
+  loadingText.textContent = 'COMPLETE!';
+  await sleep(300);
+
+  overlay.classList.remove('active');
+  progressWrap.classList.remove('visible');
+  progressBar.style.width = '0%';
+
+  showResult(result, ciphers);
+  setStatus('DECODED ✓', 'active');
+  document.getElementById('decodeBtn').disabled = false;
+  decoding = false;
+}
+
+function showResult(text, ciphers) {
+  const box = document.getElementById('outputBox');
+  const panel = document.getElementById('outputPanel');
+  const infoEl = document.getElementById('cipherInfo');
+
+  box.textContent = '';
+  panel.classList.add('visible');
+
+  // Typewriter effect
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  box.appendChild(cursor);
+
+  const speed = Math.max(8, Math.min(40, 1000 / text.length));
+
+  const typer = setInterval(() => {
+    if (i < text.length) {
+      box.insertBefore(document.createTextNode(text[i]), cursor);
+      i++;
+    } else {
+      clearInterval(typer);
+      cursor.remove();
+    }
+  }, speed);
+
+  // Cipher tags
+  infoEl.innerHTML = '';
+  ciphers.forEach((c, idx) => {
+    const tag = document.createElement('div');
+    tag.className = 'cipher-tag';
+    tag.textContent = `${idx + 1}. ${c}`;
+    infoEl.appendChild(tag);
+    setTimeout(() => tag.classList.add('show'), idx * 100 + 200);
+  });
+}
+
+function clearAll() {
+  document.getElementById('inputText').value = '';
+  document.getElementById('outputPanel').classList.remove('visible');
+  document.getElementById('outputBox').textContent = '';
+  document.getElementById('cipherInfo').innerHTML = '';
+  setStatus('STANDBY', '');
+}
+
+function copyResult() {
+  const text = document.getElementById('outputBox').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'COPIED!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = 'COPY';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  });
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('statusBar');
+  el.textContent = msg;
+  el.className = 'status-bar' + (cls ? ' ' + cls : '');
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Allow Enter+Shift in textarea, Ctrl+Enter to decode ──
+document.getElementById('inputText').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') startDecode();
+});
 </script>
-
 </body>
 </html>
